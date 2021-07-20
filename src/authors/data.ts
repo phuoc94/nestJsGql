@@ -1,3 +1,4 @@
+// eslint-disable-next-line prefer-const
 export let authors = [
   {
     name: 'Robert Martin',

@@ -1,3 +1,4 @@
+// eslint-disable-next-line prefer-const
 export let books = [
   {
     title: 'Clean Code',
