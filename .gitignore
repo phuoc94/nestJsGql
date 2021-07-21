@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # AUTOMATICALLY GENERATED
 schema.gql
+
+#ENV
+.env
