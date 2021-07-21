@@ -1,7 +1,7 @@
 import { Int, Query, Resolver } from '@nestjs/graphql';
 import { BooksService } from './books.service';
 import { Book } from './models/book.model';
-@Resolver()
+@Resolver(() => Book)
 export class BooksResolver {
   constructor(private readonly booksService: BooksService) {}
 

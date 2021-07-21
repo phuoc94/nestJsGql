@@ -10,4 +10,7 @@ export class Author {
 
   @Field(() => Int, { nullable: true })
   born?: number;
+
+  @Field(() => Int, { nullable: true })
+  bookCount?: number;
 }
