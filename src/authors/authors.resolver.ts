@@ -35,7 +35,7 @@ export class AuthorsResolver {
     return this.booksService.countByAuthorName(name);
   }
 
-  @Mutation(() => Author)
+  @Mutation(() => Author, { nullable: true })
   async editAuthor(
     @Args('editAuthorData') editAuthorData: EditAuthorInput,
   ): Promise<Author> {
