@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { authors, pushToAuthors } from 'src/authors/data';
 import { v4 as uuidv4 } from 'uuid';
-import { books, pushToBook } from './data';
+import { books, pushToBooks } from './data';
 import { AddBookInput } from './dto/add-book.input';
 import { AllBookArgs } from './dto/all-books.args';
 import { Book } from './models/book.model';
@@ -35,7 +36,16 @@ export class BooksService {
 
   async addBook(addBookInput: AddBookInput): Promise<Book> {
     const book = { ...addBookInput, id: uuidv4() };
-    pushToBook(book);
+    pushToBooks(book);
+
+    //If the author is not yet saved to the server
+    const authorName = addBookInput.author;
+    const findAuthor = authors.filter((author) => author.name === authorName);
+    if (findAuthor.length < 1) {
+      const author = { name: authorName, id: uuidv4() };
+      pushToAuthors(author);
+    }
+
     return book;
   }
 }

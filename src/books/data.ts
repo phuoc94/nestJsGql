@@ -51,8 +51,7 @@ export let books = [
   },
 ];
 
-export const pushToBook = (book) => {
+export const pushToBooks = (book) => {
   books = books.concat(book);
-
   console.log(books);
 };

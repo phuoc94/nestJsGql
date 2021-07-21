@@ -24,3 +24,8 @@ export let authors = [
     id: 'afa5b6f3-344d-11e9-a414-719c6709cf3e',
   },
 ];
+
+export const pushToAuthors = (author) => {
+  authors = authors.concat(author);
+  console.log(authors);
+};
