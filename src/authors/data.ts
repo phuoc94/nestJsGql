@@ -29,3 +29,10 @@ export const pushToAuthors = (author) => {
   authors = authors.concat(author);
   console.log(authors);
 };
+
+export const updateAuthors = (updatedAuthor) => {
+  authors = authors.map((author) =>
+    author.name === updatedAuthor.name ? updatedAuthor : author,
+  );
+  console.log(authors);
+};
