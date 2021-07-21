@@ -9,14 +9,25 @@ export class BooksService {
   }
 
   async allBooks(allBookArgs: AllBookArgs): Promise<Book[]> {
-    if (!allBookArgs.author) {
-      return books;
+    let filteredbooks = books;
+
+    if (allBookArgs.author) {
+      filteredbooks = filteredbooks.filter(
+        (book) => book.author === allBookArgs.author,
+      );
     }
-    return books.filter((b) => b.author === allBookArgs.author);
+
+    if (allBookArgs.genre) {
+      filteredbooks = filteredbooks.filter((book) =>
+        book.genres.includes(allBookArgs.genre),
+      );
+    }
+
+    return filteredbooks;
   }
 
   async countByAuthorName(author): Promise<number> {
-    const authorBooks = books.filter((b) => b.author === author);
+    const authorBooks = books.filter((book) => book.author === author);
     return authorBooks.length;
   }
 }
