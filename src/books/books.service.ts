@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { books } from './data';
+import { v4 as uuidv4 } from 'uuid';
+import { books, pushToBook } from './data';
+import { AddBookInput } from './dto/add-book.input';
 import { AllBookArgs } from './dto/all-books.args';
 import { Book } from './models/book.model';
 @Injectable()
@@ -29,5 +31,11 @@ export class BooksService {
   async countByAuthorName(author): Promise<number> {
     const authorBooks = books.filter((book) => book.author === author);
     return authorBooks.length;
+  }
+
+  async addBook(addBookInput: AddBookInput): Promise<Book> {
+    const book = { ...addBookInput, id: uuidv4() };
+    pushToBook(book);
+    return book;
   }
 }

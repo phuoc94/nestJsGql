@@ -50,3 +50,9 @@ export let books = [
     genres: ['classic', 'revolution'],
   },
 ];
+
+export const pushToBook = (book) => {
+  books = books.concat(book);
+
+  console.log(books);
+};
