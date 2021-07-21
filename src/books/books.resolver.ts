@@ -1,5 +1,6 @@
-import { Int, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Query, Resolver } from '@nestjs/graphql';
 import { BooksService } from './books.service';
+import { AllBookArgs } from './dto/all-books.args';
 import { Book } from './models/book.model';
 @Resolver(() => Book)
 export class BooksResolver {
@@ -11,7 +12,7 @@ export class BooksResolver {
   }
 
   @Query(() => [Book])
-  allBooks(): Promise<Book[]> {
-    return this.booksService.allBooks();
+  allBooks(@Args() allBookArgs: AllBookArgs): Promise<Book[]> {
+    return this.booksService.allBooks(allBookArgs);
   }
 }
