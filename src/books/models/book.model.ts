@@ -1,4 +1,6 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
+import { Author } from 'src/authors/models/author.model';
+import { Authors } from 'src/authors/schemas/authors.schema';
 
 @ObjectType()
 export class Book {
@@ -11,8 +13,8 @@ export class Book {
   @Field(() => Int)
   published: number;
 
-  @Field(() => String)
-  author: string;
+  @Field(() => Author)
+  author: Authors;
 
   @Field(() => [String])
   genres: string[];

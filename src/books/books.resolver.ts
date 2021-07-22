@@ -16,7 +16,6 @@ export class BooksResolver {
   allBooks(@Args() allBookArgs: AllBookArgs): Promise<Book[]> {
     return this.booksService.allBooks(allBookArgs);
   }
-
   @Mutation(() => Book)
   async addBook(@Args('addBookData') addBookData: AddBookInput): Promise<Book> {
     const book = await this.booksService.addBook(addBookData);

@@ -8,50 +8,108 @@ import { AddBookInput } from './dto/add-book.input';
 import { AllBookArgs } from './dto/all-books.args';
 import { Book } from './models/book.model';
 import { Books, BooksDocument } from './schemas/books.schema';
+import { Authors, AuthorsDocument } from 'src/authors/schemas/authors.schema';
+import { UserInputError } from 'apollo-server-express';
 @Injectable()
 export class BooksService {
   constructor(
     @InjectModel(Books.name) private readonly booksModel: Model<BooksDocument>,
+    @InjectModel(Authors.name)
+    private readonly authorsModel: Model<AuthorsDocument>,
   ) {}
   async countAll(): Promise<number> {
-    return books.length;
+    return await this.booksModel.collection.countDocuments();
   }
 
   async allBooks(allBookArgs: AllBookArgs): Promise<Book[]> {
-    let filteredbooks = books;
+    if (!allBookArgs.author && !allBookArgs.genre) {
+      return await this.booksModel.find({}).populate('author');
+    }
+
+    if (allBookArgs.author && allBookArgs.genre) {
+      const author = await this.authorsModel.findOne({
+        name: allBookArgs.author,
+      });
+      return await this.booksModel
+        .find({ author, genres: allBookArgs.genre })
+        .populate('author');
+    }
 
     if (allBookArgs.author) {
-      filteredbooks = filteredbooks.filter(
-        (book) => book.author === allBookArgs.author,
-      );
+      const author = await this.authorsModel.findOne({
+        name: allBookArgs.author,
+      });
+      return await this.booksModel.find({ author }).populate('author');
     }
 
     if (allBookArgs.genre) {
-      filteredbooks = filteredbooks.filter((book) =>
-        book.genres.includes(allBookArgs.genre),
-      );
+      return await this.booksModel
+        .find({ genres: allBookArgs.genre })
+        .populate('author');
     }
-
-    return filteredbooks;
   }
 
   async countByAuthorName(author): Promise<number> {
-    const authorBooks = books.filter((book) => book.author === author);
-    return authorBooks.length;
+    return await this.booksModel.find({ author }).countDocuments();
   }
 
-  async addBook(addBookInput: AddBookInput): Promise<Book> {
-    const book = { ...addBookInput, id: uuidv4() };
-    pushToBooks(book);
+  async addBook(addBookInput: AddBookInput): Promise<Books> {
+    // Get Input Author
+    const author = await this.authorsModel.findOne({
+      name: addBookInput.author,
+    });
+    // IF Author Not found
+    if (author === null) {
+      // Create New Author
+      const NewAuthor = new this.authorsModel({
+        name: addBookInput.author,
+        born: null,
+      });
+      //Try SAVE New Author
+      try {
+        await NewAuthor.save();
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: addBookInput,
+        });
+      }
 
-    //If the author is not yet saved to the server
-    const authorName = addBookInput.author;
-    const findAuthor = authors.filter((author) => author.name === authorName);
-    if (findAuthor.length < 1) {
-      const author = { name: authorName, id: uuidv4() };
-      pushToAuthors(author);
+      //Create New Book
+      const NewBook = new this.booksModel({ ...addBookInput, author });
+      // Try Update Author Books & Save New Book
+      try {
+        NewAuthor.books = NewAuthor.books.concat(NewBook._id);
+        await NewAuthor.save();
+        await NewBook.save();
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: addBookInput,
+        });
+      }
+
+      // return new created book
+      return NewBook;
     }
+    // inputted Author is already in database
+    else {
+      // Create new book
+      const NewBook = new this.booksModel({ ...addBookInput, author });
+      // Try Update Author Books & Save New Book
+      console.log('newBook', NewBook);
+      console.log('author', author);
 
-    return book;
+      try {
+        author.books = author.books.concat(NewBook._id);
+        await author.save();
+        await NewBook.save();
+      } catch (error) {
+        throw new UserInputError(error.message, {
+          invalidArgs: addBookInput,
+        });
+      }
+
+      // return new created book
+      return NewBook;
+    }
   }
 }
