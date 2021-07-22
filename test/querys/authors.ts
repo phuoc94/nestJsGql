@@ -16,6 +16,7 @@ query {
     allAuthors {
       name
       bookCount
+      born
     }
   }
 `;
