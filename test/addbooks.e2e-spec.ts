@@ -4,7 +4,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
 import * as dotenv from 'dotenv';
 import { BooksModule } from '../src/books/books.module';
-import { allAuthorsWbookCountQuery } from './querys/authors';
+import {
+  allAuthorsWbookCountQuery,
+  editAuthorNotInDBQuery,
+  editAuthorQuery,
+  NewAuthor,
+} from './querys/authors';
 import { AuthorsModule } from '../src/authors/authors.module';
 import {
   addBookNewAuthorQuery,
@@ -103,6 +108,35 @@ describe('addbooks', () => {
         expect(author.name).toBe(NewBookNewAuthor.author);
         expect(author.bookCount).toBe(NewBookNewAuthor.bookCount);
         expect(author.born).toBe(null);
+      })
+      .expect(200);
+  });
+
+  it('editAuthor', () => {
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .send({
+        operationName: null,
+        query: editAuthorQuery,
+      })
+      .expect(({ body }) => {
+        const author = body.data.editAuthor;
+        expect(author.name).toBe(NewAuthor.name);
+        expect(author.born).toBe(NewAuthor.born);
+      })
+      .expect(200);
+  });
+
+  it('editAuthor author not in database', () => {
+    return request(app.getHttpServer())
+      .post('/graphql')
+      .send({
+        operationName: null,
+        query: editAuthorNotInDBQuery,
+      })
+      .expect(({ body }) => {
+        const author = body.data.editAuthor;
+        expect(author).toBe(null);
       })
       .expect(200);
   });
