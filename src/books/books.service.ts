@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { authors, pushToAuthors } from 'src/authors/data';
+import { authors, pushToAuthors } from '../authors/data';
 import { v4 as uuidv4 } from 'uuid';
 import { books, pushToBooks } from './data';
 import { AddBookInput } from './dto/add-book.input';

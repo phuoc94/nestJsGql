@@ -7,7 +7,7 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { BooksService } from 'src/books/books.service';
+import { BooksService } from '../books/books.service';
 import { AuthorsService } from './authors.service';
 import { EditAuthorInput } from './dto/edit-author.input';
 import { Author } from './models/author.model';
