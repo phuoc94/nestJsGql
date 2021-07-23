@@ -7,17 +7,13 @@ import {
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
-import { BooksService } from '../books/books.service';
 import { AuthorsService } from './authors.service';
 import { EditAuthorInput } from './dto/edit-author.input';
 import { Author } from './models/author.model';
 
 @Resolver(() => Author)
 export class AuthorsResolver {
-  constructor(
-    private readonly authorsService: AuthorsService,
-    private readonly booksService: BooksService,
-  ) {}
+  constructor(private readonly authorsService: AuthorsService) {}
 
   @Query(() => Int)
   authorCount(): Promise<number> {
@@ -32,7 +28,7 @@ export class AuthorsResolver {
   @ResolveField()
   async bookCount(@Parent() author: Author) {
     const { name } = author;
-    return this.booksService.countByAuthorName(name);
+    return this.authorsService.authorBookCount(name);
   }
 
   @Mutation(() => Author, { nullable: true })
