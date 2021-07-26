@@ -30,7 +30,9 @@ export const allBooksQuery = `
 query {
     allBooks { 
       title 
-      author
+      author{
+        name
+      }
       published 
       genres
     }
@@ -48,7 +50,9 @@ export const allBooksByGenreQuery = `
 query {
     allBooks(genre: "${Book.genres[0]}") {
       title
-      author
+      author{
+        name
+      }
     }
   }
 `;
@@ -57,7 +61,9 @@ export const allBooksByGenreAndAuthorQuery = `
 query {
     allBooks(genre: "${Book.genres[0]}", author: "${Book.author}") {
       title
-      author
+      author{
+        name
+      }
     }
   }
 `;
@@ -73,7 +79,9 @@ mutation {
       }
     ) {
       title,
-      author
+      author {
+        name
+      }
     }
   }
 `;
@@ -89,7 +97,9 @@ mutation {
       }
     ) {
       title,
-      author
+      author{
+        name
+      }
     }
   }
 `;
