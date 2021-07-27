@@ -7,45 +7,43 @@ import { LoginInput } from './dto/login.input';
 import { Token } from './models/token.model';
 import { Users, UsersDocument } from './schemas/users.schema';
 require('dotenv').config();
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
-const JWT_SECRET = process.env.JWT_SECRET;
 const BCRYPT_SALT = process.env.BCRYPT_SALT;
-const saltRounds = 10;
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(Users.name) private readonly usersModel: Model<UsersDocument>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async login(loginData: LoginInput): Promise<Token> {
     const user = await this.usersModel.findOne({
       username: loginData.username,
     });
-
     if (!user) {
       throw new UserInputError('User not found');
     }
-    const isPasswordCorrect = bcrypt.compareSync(
+
+    const isPasswordCorrect = await bcrypt.compare(
       loginData.password,
       user.password,
     );
+
     if (!isPasswordCorrect) {
       throw new UserInputError('wrong password');
     }
 
-    const userForToken = {
-      username: user.username,
-      id: user._id,
-    };
+    const payload = { username: user.username, sub: user.id };
 
-    return { value: jwt.sign(userForToken, JWT_SECRET) };
+    const token = this.jwtService.sign(payload);
+
+    return { value: token };
   }
 
   async createUser(createUserInput: CreateUserInput): Promise<Users> {
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hash = bcrypt.hashSync(createUserInput.password, salt);
+    const hash = await bcrypt.hash(createUserInput.password, BCRYPT_SALT);
     const NewUser = new this.usersModel({
       ...createUserInput,
       password: hash,
