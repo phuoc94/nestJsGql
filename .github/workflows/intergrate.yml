@@ -24,3 +24,6 @@ jobs:
       - run: yarn install
       - run: npm run test
       - run: npm run build
+
+      - name: Collect test coverage report
+      - run: yarn test:cov
